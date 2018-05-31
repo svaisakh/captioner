@@ -13,8 +13,9 @@ def Extractor(architecture):
 def extract(extractor, dataloader):
 	import torch
 
-	from tqdm import tqdm_notebook as tqdm
-
+	from utils import get_tqdm
+	tqdm = get_tqdm()
+	
 	batch_size = dataloader.batch_size
 	num_images = len(dataloader.dataset)
 	feature_size = _feature_size(extractor, dataloader)
@@ -69,9 +70,10 @@ def _detach_head(model):
 	model.forward = MethodType(extractor_forward, model)
 
 def __main():
-	from captioner.hparams import image_shape, architecture
-	from captioner.hparams import extractor_batch_size as batch_size
-	
+	from pathlib import Path
+	from hparams import image_shape, architecture
+	from hparams import extractor_batch_size as batch_size
+
 	DIR_DATA = Path('~/.data/COCO').expanduser()
 
 	dataloader = get_dataloaders(DIR_DATA, image_shape, batch_size)
@@ -79,7 +81,7 @@ def __main():
 
 	for mode in ('val', 'train'):
 		print(f'Extracting features for set {mode}')
-	    features = extract(extractor, dataloader[mode])
-	    torch.save(features.to('cpu'), DIR_DATA / mode / 'features.pt')
-
+		features = extract(extractor, dataloader[mode])
+		torch.save(features.to('cpu'), DIR_DATA / mode / 'features.pt')
+		
 if __name__ == '__main__': __main()

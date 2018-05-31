@@ -55,3 +55,12 @@ def _working_directory_context_manager(path):
     yield
     
     os.chdir(path_cwd) # Change back to working directory
+
+def get_tqdm():
+    import tqdm
+
+    try:
+        get_ipython
+        return getattr(tqdm, 'tqdm_notebook')
+    except:
+        return getattr(tqdm, 'tqdm')
