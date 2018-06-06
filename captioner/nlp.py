@@ -1,4 +1,4 @@
-def get_nlp(model, vocab_size, save_path):
+def get_nlp(model, vocab_size, save_path=None):
 	import spacy
 
 	nlp = spacy.load(model)
@@ -6,16 +6,16 @@ def get_nlp(model, vocab_size, save_path):
 	set_vocab_size(nlp, vocab_size, save_path)
 	return nlp
 
-def set_vocab_size(nlp, vocab_size, save_path):
-    if save_path.exists():
+def set_vocab_size(nlp, vocab_size, save_path=None):
+    if save_path is not None and save_path.exists():
         nlp.vocab.from_disk(save_path)
         new_vocab_size = nlp.vocab.vectors.shape[0]
         if new_vocab_size != vocab_size: prune_vocab(nlp, save_path)
     else: prune_vocab(nlp, save_path)
 
-def prune_vocab(nlp, save_path):
+def prune_vocab(nlp, save_path=None):
     nlp.vocab.prune_vectors(vocab_size, prune_batch_size)
-    nlp.vocab.to_disk(save_path)
+    if save_path is not None: nlp.vocab.to_disk(save_path)
 
 def word_idx(word, nlp, oov):
     if isinstance(word, str): word = nlp(word)[0]
