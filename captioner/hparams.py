@@ -2,10 +2,8 @@ from multiprocessing import cpu_count as __num_cores
 
 # Extractor
 architecture = 'resnet34'
-extractor_batch_size = 8
-image_shape = 256
-
-if type(image_shape) is int: image_shape = (image_shape, image_shape)
+extractor_batch_size = 1
+image_shape = None
 
 # General
 num_workers = 8

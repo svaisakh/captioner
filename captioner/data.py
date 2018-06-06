@@ -1,21 +1,31 @@
 from torchvision.datasets import CocoCaptions
 
-def get_extract_dataloaders(data_path, image_shape, batch_size, num_workers):
-    transform = get_transform()
+def get_extract_dataloaders(data_path, image_shape=None, batch_size=1, num_workers=0):
+    if image_shape is None and batch_size != 1:
+        import warnings
+        batch_size = 1
+        warnings.warn('Since you wish to use variable image sizes, setting batch_size=1.'
+                      '\nDealing with variable inputs is not trivial.', RuntimeWarning)
 
-    return {mode: _get_extract_dataloader(data_path / mode, transform, image_shape, batch_size, num_workers) for mode in ('train', 'val')}
+    return {mode: _get_extract_dataloader(data_path / mode, image_shape, batch_size, num_workers) for mode in ('train', 'val')}
 
-def _get_extract_dataloader(data_path, transform, image_shape, batch_size, num_workers):
+def _get_extract_dataloader(data_path, image_shape=None, batch_size=1, num_workers=0):
     from torch.utils.data.dataloader import DataLoader
+    transform = get_transform(image_shape)
 
     dataset = CocoCaptions(data_path, data_path / 'captions.json', transform)
     return DataLoader(dataset, batch_size, num_workers=num_workers)
 
-def get_transform(image_shape):
+def get_transform(image_shape=None):
     from torchvision import transforms
 
     normalization = {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]}
-    return transforms.Compose([transforms.Resize(image_shape), transforms.ToTensor(), transforms.Normalize(**normalization)])
+    transform = [transforms.ToTensor(), transforms.Normalize(**normalization)]
+    if image_shape is not None:
+        if isinstance(image_shape, int): image_shape = (image_shape, image_shape)
+        transform.insert(0, transforms.Resize(image_shape))
+
+    return transforms.Compose(transform)
 
 def get_training_dataloaders(data_path, caption_idx, shuffle):
     return {mode: _get_training_dataloader(data_path / mode, caption_idx, shuffle) for mode in ('train', 'val')}
@@ -24,7 +34,6 @@ def _get_training_dataloader(data_path, caption_idx, shuffle):
     from torch.utils.data.dataloader import DataLoader
 
     dataset = CocoExtracted(data_path, data_path / 'captions.json', data_path / 'features.pt', caption_idx)
-
     return DataLoader(dataset, batch_size=1, shuffle=shuffle)
 
 class CocoExtracted(CocoCaptions):
