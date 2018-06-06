@@ -12,7 +12,7 @@ def caption():
 
 def sample(model, feature, nlp, cap=None):
 	from nlp import idx_word
-	
+
 	if cap is not None:
 		cap = process_caption(cap[0])[0]
 		y = model(feature.to(mag.device), cap.to(mag.device))
