@@ -46,12 +46,9 @@ def get_transform(image_shape):
 	normalization = {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]}
 	return transforms.Compose([transforms.Resize(image_shape), transforms.ToTensor(), transforms.Normalize(**normalization)])
 
-@mag.eval
-def _feature_size(extractor, dataloader):
-    return len(extractor(next(iter(dataloader))[0][:1].to(mag.device))[0])
-
 def _detach_head(model):
 	from types import MethodType
+	from torch.nn import AdaptiveAvgPool2d
 
 	def extractor_forward(self, x):
 		    x = self.conv1(x)
@@ -69,7 +66,9 @@ def _detach_head(model):
 
 		    return x
 
-	del model.fc  
+	model.feature_size = model.fc.in_features
+	del model.fc
+	model.avgpool = AdaptiveAvgPool2d(1)
 	model.forward = MethodType(extractor_forward, model)
 
 def __main():
