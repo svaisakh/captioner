@@ -40,3 +40,4 @@ caption_idx = 0
 
 # Evaluation
 beam_size = 3
+probabilistic = False

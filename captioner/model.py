@@ -4,6 +4,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+import numpy as np
+
 from captioner.nlp import idx_word
 
 class Model(nn.Module):
@@ -20,18 +22,18 @@ class Model(nn.Module):
 
         self.to(mag.device)
 
-    def forward(self, features, cap=None, nlp=None, beam_size=3, max_len=20):
+    def forward(self, features, cap=None, nlp=None, beam_size=3, max_len=20, probabilistic=False):
         if cap is None:
             if self.training: raise ValueError('Provide caption while training')
-            return self._generate(features, nlp, beam_size, max_len)
+            return self._generate(features, nlp, beam_size, max_len, probabilistic)
 
         h0 = self._get_initial_hidden(features)
         x = self.rnn(cap, h0)[0]
         return self.fc(x)
 
-    def _generate(self, features, nlp, beam_size, max_len):
+    def _generate(self, features, nlp, beam_size, max_len, probabilistic):
         self._search.build = lambda *args: self._build(*args, nlp=nlp)
-        branches = self._search(beam_size, features, max_len)
+        branches = self._search(beam_size, features, max_len, probabilistic)
 
         captions, probs = [], []
         for branch in branches:
@@ -42,7 +44,11 @@ class Model(nn.Module):
                 captions.append(caption)
                 probs.append(prob)
 
-        return list(zip(captions, probs))
+        probs = np.array(probs)
+        sort_idx = np.argsort(probs)[::-1]
+        probs = list(probs / probs.sum())
+
+        return [(captions[i], probs[i]) for i in sort_idx]
 
     def _build(self, content, context, nlp):
         prev_ids = content

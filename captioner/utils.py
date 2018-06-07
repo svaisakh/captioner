@@ -10,37 +10,49 @@ class BeamSearch:
 	def __init__(self, build=None):
 		self.build = build
 
-	def __call__(self, beam_size, context, max_len):
-		return self._search(beam_size, context, max_len)
+	def __call__(self, beam_size, context, max_len, probabilistic=0):
+		return self._search(beam_size, context, max_len, probabilistic)
 
-	def _search(self, beam_size, context, max_len):
+	def _search(self, beam_size, context, max_len, probabilistic):
 		branches = [self.Branch([], 0, context)]
 
 		for _ in range(max_len):
 			branches = list(chain(*[[new_branch
-									 for new_branch in self._get_branches(branch, beam_size)]
+									 for new_branch in self._get_branches(branch, beam_size, probabilistic)]
 									for branch in branches]))
 
-			branches.sort(key=lambda branch: branch.score, reverse=True)
-			branches = branches[:beam_size]
+			branches = self._prune_branches(branches, beam_size, probabilistic)
 
-		total_prob = sum(np.exp(branch.score) for branch in branches)
-		branches = [self.Branch(branch.content, np.exp(branch.score) / total_prob, None) for branch in branches]
+		branches = [self.Branch(branch.content, np.exp(branch.score), None) for branch in branches]
 
 		return branches
 
-	def _get_branches(self, branch, beam_size):
+	def _get_branches(self, branch, beam_size, probabilistic):
 		contents, scores, context = self.build(branch.content, branch.context)
 		nodes = [self.Branch([content], score, context)
 				 for content, score in zip(contents, scores)]
 
-		nodes.sort(key=lambda node: node.score, reverse=True)
-		nodes = nodes[:beam_size]
+		if not probabilistic: nodes = self._prune_branches(nodes, beam_size, probabilistic)
 
 		return [self._merge(branch, node) for node in nodes]
 
 	def _merge(self, b1, b2):
 		return self.Branch(b1.content + b2.content, b1.score + b2.score, b2.context)
+
+	def _prune_branches(self, branches, beam_size, probabilistic):
+		branches = _sort_list(branches, key=lambda branch: np.exp(branch.score), probabilistic=probabilistic)
+		return branches[:beam_size]
+
+def _sort_list(x, key, probabilistic):
+	if not probabilistic:
+		x.sort(key=key, reverse=True)
+		return x
+
+	probs = np.array([key(x_i) for x_i in x])
+	probs /= probs.sum()
+
+	ids = np.random.choice(list(range(len(x))), len(x), replace=False, p=probs)
+	return [x[i] for i in ids]
 
 def show_coco(img, captions):
 	import matplotlib.pyplot as plt
