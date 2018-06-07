@@ -1,28 +1,47 @@
-def optimize(model, optimizer, dataloader, nlp, vocab_size, epochs=1, iterations=None):
-    from utils import get_tqdm, loopy
+import magnet as mag
+import torch
+
+def optimize(model, optimizer, history, dataloader, nlp, vocab_size, save_path, epochs=1, iterations=None, save_every=5, write_every=1):
+    from captioner.utils import get_tqdm, loopy
+    from time import time
+
     tqdm = get_tqdm()
+    start_time = time()
+    mean = lambda x: sum(x) / len(x)
 
     model.train()
     if iterations is None: iterations = int(epochs * len(dataloader['train']))
     prog_bar = tqdm(range(iterations))
-    gen = loopy(dataloader['train'])
-    losses = []
+    gen = {mode: loopy(dataloader[mode]) for mode in ('train', 'val')}
+    running_history = {'loss': []}
 
     for batch in prog_bar:
-        feature, caption = next(gen)
+        feature, caption = next(gen['train'])
         loss = get_loss(model, feature, caption[0], nlp, vocab_size)
 
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
 
-        prog_bar.set_description(f'{loss.item():.2f}')
-        if not batch % 100: losses.append(loss.item())
+        running_history['loss'].append(loss.item())
+        history['iterations'] += 1
 
-    return losses
+        if (time() - start_time > write_every * 60) or (batch == iterations - 1):
+            mean_loss = mean(running_history['loss'])
+            history['loss'].append(mean_loss)
+            running_history['loss'] = []
+
+            feature, caption = next(gen['val'])
+            with mag.eval(model): loss = get_loss(model, feature, caption[0], nlp, vocab_size).item()
+            history['val_loss'].append(loss)
+
+            prog_bar.set_description(f'{mean_loss:.2f} val={loss:.2f}')
+            
+        if (time() - start_time > save_every * 60) or (batch == iterations - 1):
+            torch.save(model.state_dict(), save_path / 'model.pt')
+            torch.save(optimizer.state_dict(), save_path  / 'optimizer.pt')
 
 def get_loss(model, feature, caption, nlp, vocab_size):
-    import magnet as mag
     from torch.nn import functional as F
 
     cap, target = process_caption(caption, nlp, vocab_size)
@@ -30,9 +49,8 @@ def get_loss(model, feature, caption, nlp, vocab_size):
     return F.cross_entropy(y.squeeze(0), target.to(mag.device))
 
 def process_caption(caption, nlp, vocab_size):
-    import torch
     from numpy import stack
-    from nlp import word_idx
+    from captioner.nlp import word_idx
 
     caption = nlp(caption)
     vectors = torch.tensor(stack([token.vector for token in caption[:-1]])).unsqueeze(0)
