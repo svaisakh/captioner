@@ -1,5 +1,4 @@
 import magnet as mag
-from train import process_caption
 
 def caption():
 	img, caption = next(dl)
@@ -11,7 +10,7 @@ def caption():
 	plt.show()
 
 def sample(model, feature, nlp, cap=None):
-	from nlp import idx_word
+	from captioner.nlp import idx_word, process_caption
 
 	if cap is not None:
 		cap = process_caption(cap[0])[0]
