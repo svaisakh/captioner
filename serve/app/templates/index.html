@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+	{% if captions %}
+		{% for caption in captions %}
+			<h2>{{ caption }}</h2>
+		{% endfor %}
+	{% endif %}
+
+	{% if image %}
+		<img src="{{ image }}" width="512">
+	{% endif %}
+
+	<form action="" enctype="multipart/form-data" method="post">
+		{{ form.hidden_tag() }}
+		<p>
+			{{ form.image }}
+		</p>
+		<p>
+			{{ form.submit() }}
+		</p>
+	</form>
+
+{% endblock %}
