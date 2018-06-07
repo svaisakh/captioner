@@ -26,8 +26,10 @@ def word_idx(word, nlp, oov):
     return idx
 
 def idx_word(idx, nlp):
-    hash_code = nlp.vocab.vectors.find(row=idx)[0]
-    return nlp.vocab.strings[hash_code]
+    hash_code = nlp.vocab.vectors.find(row=idx)
+    if len(hash_code) == 0: return '<UNK>'
+
+    return nlp.vocab.strings[hash_code[0]]
 
 def process_caption(caption, nlp, vocab_size):
     from numpy import stack
