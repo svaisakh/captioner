@@ -5,6 +5,7 @@ from pathlib import Path
 
 from captioner.data import get_transform
 
+@mag.eval
 def caption(model, extractor, nlp, image, beam_size=1, image_shape=None):
 	transform = get_transform(image_shape)
 	if type(image) in ('str', Path): image = Image.open(filenames[0])
