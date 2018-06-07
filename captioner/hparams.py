@@ -37,3 +37,6 @@ optimizer = _get_optimizer(optimizer)
 vocab_size = 10000
 prune_batch_size = 8
 caption_idx = 0
+
+# Evaluation
+beam_size = 3

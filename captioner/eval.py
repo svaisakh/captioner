@@ -1,26 +1,17 @@
 import magnet as mag
 
-def caption():
-	img, caption = next(dl)
-	feature = extractor(img.to(mag.device))
-	show_images(img.permute(0, 2, 3, 1).numpy(), pixel_range='auto', retain=True)
-	caption = sample(feature, caption[0])
-	caption = caption[:caption.find('.')]
-	plt.title(caption)
-	plt.show()
+from PIL import Image
+from pathlib import Path
 
-def sample(model, feature, nlp, cap=None):
-	from captioner.nlp import idx_word, process_caption
+from captioner.data import get_transform
 
-	if cap is not None:
-		cap = process_caption(cap[0])[0]
-		y = model(feature.to(mag.device), cap.to(mag.device))
-	else:
-		y = model(feature.to(mag.device), nlp=nlp)
+def caption(model, extractor, nlp, image, beam_size=1, image_shape=None):
+	transform = get_transform(image_shape)
+	if type(image) in ('str', Path): image = Image.open(filenames[0])
 
-	indices = y.squeeze(0)
-	if cap is not None: indices = indices.max(-1)[1]
+	features = extractor(transform(image).unsqueeze(0).to(mag.device))
 
-	caption = ' '.join([idx_word(i.item(), nlp) for i in indices])
-	caption = caption[:caption.find('.')]
-	return caption
+	captions = model(features, nlp=nlp, beam_size=beam_size)
+	if len(captions) == 1: return captions[0][0]
+
+	return '\n'.join(f'{c} ({p:.2f})' for c, p in captions)
