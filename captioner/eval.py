@@ -12,11 +12,9 @@ def caption(model, extractor, nlp, image, beam_size=1, image_shape=None):
 
 	features = extractor(transform(image).unsqueeze(0).to(mag.device))
 
-	captions = model(features, nlp=nlp, beam_size=beam_size)
-	return pretty_print(captions)
+	return model(features, nlp=nlp, beam_size=beam_size)
 
 def pretty_print(captions):
-	print(captions)
-	if len(captions) == 1: return captions[0][0]
+	if len(captions) == 1: print(captions[0][0])
 
-	return '\n'.join(f'{c} ({p:.2f})' for c, p in captions)
+	print('\n'.join(f'{c} ({p:.2f})' for c, p in captions))
