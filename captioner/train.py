@@ -1,7 +1,8 @@
 import magnet as mag
-import torch
 
 def optimize(model, optimizer, history, dataloader, nlp, vocab_size, save_path, epochs=1, iterations=None, save_every=5, write_every=1):
+    import torch
+    
     from captioner.utils import get_tqdm, loopy
     from time import time
 
@@ -43,16 +44,8 @@ def optimize(model, optimizer, history, dataloader, nlp, vocab_size, save_path, 
 
 def get_loss(model, feature, caption, nlp, vocab_size):
     from torch.nn import functional as F
+    from captioner.nlp import process_caption
 
     cap, target = process_caption(caption, nlp, vocab_size)
     y = model(feature.to(mag.device), cap.to(mag.device))
     return F.cross_entropy(y.squeeze(0), target.to(mag.device))
-
-def process_caption(caption, nlp, vocab_size):
-    from numpy import stack
-    from captioner.nlp import word_idx
-
-    caption = nlp(caption)
-    vectors = torch.tensor(stack([token.vector for token in caption[:-1]])).unsqueeze(0)
-    indices = torch.tensor([word_idx(token, nlp, vocab_size) for token in caption[1:]])
-    return vectors, indices
