@@ -41,7 +41,7 @@ class CocoExtracted(CocoCaptions):
 		import torch
 
 		super().__init__(root, annFile)
-		self.features = torch.load(feature_file)
+		self.features = torch.load(feature_file, map_location='cpu')
 		self.caption_idx = caption_idx
 
 	def __getitem__(self, index):
