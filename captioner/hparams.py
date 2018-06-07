@@ -22,6 +22,7 @@ optimizer = 'adam'
 epochs = 1
 iterations = None
 save_every = 5
+write_every = 1
 
 def _get_optimizer(optimizer):
 	from torch import optim

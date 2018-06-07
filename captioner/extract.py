@@ -61,6 +61,6 @@ def __main():
 	for mode in ('val', 'train'):
 		print(f'Extracting features for set {mode}')
 		with mag.eval(extractor): features = extractor(dataloader[mode])
-    	torch.save(features.to('cpu'), DIR_DATA / mode / 'features.pt')
+		torch.save(features, DIR_DATA / mode / 'features.pt')
 
 if __name__ == '__main__': __main()
