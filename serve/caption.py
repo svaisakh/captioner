@@ -1,7 +1,7 @@
 import magnet as mag
 import torch
 
-from captioner.hparams import beam_size, image_shape, vocab_size, hidden_size, num_layers, rnn_type, architecture
+from captioner.hparams import beam_size, image_shape, vocab_size, hidden_size, num_layers, rnn_type, architecture, probabilistic
 from captioner.eval import caption
 from captioner.nlp import get_nlp
 from captioner.extract import Extractor
@@ -30,4 +30,4 @@ nlp, extractor, model = _prepare()
 
 def get_captions(filename):
 	image = Image.open(filename)
-	return caption(model, extractor, nlp, image, beam_size, image_shape)
+	return caption(model, extractor, nlp, image, beam_size, probabilistic, image_shape)

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 	{% if captions %}
 		{% for caption in captions %}
 			<h2>{{ caption }}</h2>
 		{% endfor %}
+	{% else %}
+		<h1>Upload An Image and Click on Submit</h1>
 	{% endif %}
 
 	{% if image %}
