@@ -1,5 +1,7 @@
 import torch
 
+from numpy import stack
+
 def get_nlp(model, vocab_size, save_path=None):
 	import spacy
 
@@ -32,8 +34,6 @@ def idx_word(idx, nlp):
     return nlp.vocab.strings[hash_code[0]]
 
 def process_caption(caption, nlp, vocab_size):
-    from numpy import stack
-
     caption = nlp(caption)
     vectors = torch.tensor(stack([token.vector for token in caption[:-1]])).unsqueeze(0)
     indices = torch.tensor([word_idx(token, nlp, vocab_size) for token in caption[1:]])

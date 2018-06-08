@@ -1,4 +1,5 @@
 from torchvision.datasets import CocoCaptions
+from numpy.random import randint
 
 def get_extract_dataloaders(data_path, image_shape=None, batch_size=1, num_workers=0):
 	if image_shape is None and batch_size != 1:
@@ -55,7 +56,6 @@ class CocoExtracted(CocoCaptions):
 		return features, caption
 
 	def _get_caption(self, index):
-		from numpy.random import randint
 		coco = self.coco
 		img_id = self.ids[index]
 		ann_ids = coco.getAnnIds(imgIds=img_id)

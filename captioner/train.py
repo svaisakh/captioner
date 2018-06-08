@@ -1,5 +1,9 @@
 import magnet as mag
 
+from torch.nn import functional as F
+
+from captioner.nlp import process_caption
+
 def optimize(model, optimizer, history, dataloader, nlp, vocab_size, save_path, epochs=1, iterations=None, save_every=5, write_every=1):
 	import torch
 
@@ -46,9 +50,6 @@ def optimize(model, optimizer, history, dataloader, nlp, vocab_size, save_path, 
 			torch.save(optimizer.state_dict(), save_path  / 'optimizer.pt')
 
 def get_loss(model, feature, caption, nlp, vocab_size):
-	from torch.nn import functional as F
-	from captioner.nlp import process_caption
-
 	cap, target = process_caption(caption, nlp, vocab_size)
 	y = model(feature.to(mag.device), cap.to(mag.device))
 	return F.cross_entropy(y.squeeze(0), target.to(mag.device))
