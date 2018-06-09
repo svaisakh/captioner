@@ -43,24 +43,27 @@ def _detach_head(model):
 	model.avgpool = AdaptiveAvgPool2d(1)
 	model.forward = MethodType(extractor_forward, model)
 
-def __main():
+def __main(architecture, image_shape, extractor_batch_size, num_workers):
 	import torch
 
 	from pathlib import Path
-	from hparams import image_shape, architecture, num_workers
-	from hparams import extractor_batch_size as batch_size
 	from captioner.data import get_extract_dataloaders
 
 	DIR_DATA = Path('~/.data/COCO').expanduser()
 
-	if (DIR_DATA / 'train/features.pt').exists(): return
-
-	dataloader = get_extract_dataloaders(DIR_DATA, image_shape, batch_size, num_workers)
+	dataloader = get_extract_dataloaders(DIR_DATA, image_shape, extractor_batch_size, num_workers)
 	extractor = Extractor(architecture)
 
-	for mode in ('val', 'train'):
-		print(f'Extracting features for set {mode}')
+	for mode, name in (('val', 'Validation'), ('train', 'Training')):
+		print(f'Extracting features for {name} set.')
 		with mag.eval(extractor): features = extractor(dataloader[mode])
 		torch.save(features, DIR_DATA / mode / 'features.pt')
 
-if __name__ == '__main__': __main()
+	print('Done')
+
+if __name__ == '__main__':
+	import hparams
+
+	from captioner.utils import launch
+
+	launch(__main, default_module=hparams)

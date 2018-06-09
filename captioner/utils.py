@@ -61,25 +61,19 @@ def launch(fn, defaults=None, default_module=None):
 
 	args = list(signature(fn).parameters.keys())
 
-	if default_module is not None and hasattr(default_module, 'help_dict'):
-		has_help = True
-		help_dict = getattr(default_module, 'help_dict')
-	else:
-		has_help = False
+	click_options = getattr(default_module, 'click_options', {}) if default_module is not None else {}
 
 	for k in args[::-1]:
-		if k in defaults.keys():
+		if defaults is not None and k in defaults.keys():
 			d = defaults[k]
 			if type(d) in (tuple, list):
-				fn = click.option('--' + k, default=d[0], help=d[1])(fn)
+				fn = click.option('--' + k, show_default=True, default=d[0], help=d[1])(fn)
 			else:
-				fn = click.option('--' + k, default=d)(fn)
+				fn = click.option('--' + k, show_default=True, default=d)(fn)
 
 		if hasattr(default_module, k):
-			if has_help and k in help_dict.keys():
-				fn = click.option('--' + k, default=getattr(default_module, k), help=help_dict[k])(fn)
-			else:
-				fn = click.option('--' + k, default=getattr(default_module, k))(fn)
+			kwargs = click_options[k] if k in click_options.keys() else {}
+			fn = click.option('--' + k, show_default=True, default=getattr(default_module, k), **kwargs)(fn)
 
 	fn = click.command()(fn)
 

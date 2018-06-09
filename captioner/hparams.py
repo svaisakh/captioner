@@ -41,3 +41,30 @@ caption_idx = 0
 # Evaluation
 beam_size = 3
 probabilistic = False
+
+def _get_click_options():
+	import click
+
+	return \
+	{
+		'architecture':
+		{
+			'help': "The ResNet Architecture to use for extraction.",
+			'type': click.Choice(('resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'))
+		},
+		'image_shape':
+		{
+			'help': "The square size that all images will be resized to prior to extraction. Note that Torchvision's ResNet models only support 224x224 images."
+					" So this is the default value.",
+		},
+		'extractor_batch_size':
+		{
+			'help': "The extractor will process images in batches of this size. Use as big a value as your machine can handle. A power of two is preferred."
+		},
+		'num_workers':
+		{
+			'help': f"Number of CPU cores to use for loading images from disk. Maximum that can be used in your machine is {__num_cores()}"
+		}
+	}
+
+click_options = _get_click_options()
