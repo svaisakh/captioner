@@ -54,6 +54,37 @@ def _sort_list(x, key, probabilistic):
 	ids = np.random.choice(list(range(len(x))), len(x), replace=False, p=probs)
 	return [x[i] for i in ids]
 
+def launch(fn, defaults=None, default_module=None):
+	import click
+
+	from inspect import signature
+
+	args = list(signature(fn).parameters.keys())
+
+	if default_module is not None and hasattr(default_module, 'help_dict'):
+		has_help = True
+		help_dict = getattr(default_module, 'help_dict')
+	else:
+		has_help = False
+
+	for k in args[::-1]:
+		if k in defaults.keys():
+			d = defaults[k]
+			if type(d) in (tuple, list):
+				fn = click.option('--' + k, default=d[0], help=d[1])(fn)
+			else:
+				fn = click.option('--' + k, default=d)(fn)
+
+		if hasattr(default_module, k):
+			if has_help and k in help_dict.keys():
+				fn = click.option('--' + k, default=getattr(default_module, k), help=help_dict[k])(fn)
+			else:
+				fn = click.option('--' + k, default=getattr(default_module, k))(fn)
+
+	fn = click.command()(fn)
+
+	return fn()
+
 def show_coco(img, captions):
 	import matplotlib.pyplot as plt
 
