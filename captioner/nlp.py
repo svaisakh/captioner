@@ -21,10 +21,10 @@ def prune_vocab(nlp, save_path=None):
     nlp.vocab.prune_vectors(vocab_size, prune_batch_size)
     if save_path is not None: nlp.vocab.to_disk(save_path)
 
-def word_idx(word, nlp, oov):
+def word_idx(word, nlp):
     if isinstance(word, str): word = nlp(word)[0]
     idx = int(nlp.vocab.vectors.find(key=word.orth))
-    if idx == -1: return oov
+    if idx == -1: return nlp.vocab.vectors.shape[0]
     return idx
 
 def idx_word(idx, nlp):
@@ -36,5 +36,5 @@ def idx_word(idx, nlp):
 def process_caption(caption, nlp, vocab_size):
     caption = nlp(caption)
     vectors = torch.tensor(stack([token.vector for token in caption[:-1]])).unsqueeze(0)
-    indices = torch.tensor([word_idx(token, nlp, vocab_size) for token in caption[1:]])
+    indices = torch.tensor([word_idx(token, nlp) for token in caption[1:]])
     return vectors, indices
