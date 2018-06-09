@@ -59,6 +59,10 @@ def __main(epochs, iterations, shuffle, optimizer, learning_rate, vocab_size, ca
 	from captioner.nlp import get_nlp
 	from captioner.utils import DIR_DATA, DIR_CHECKPOINTS, get_optimizer
 
+	if not (DIR_DATA / 'train' / 'features.pt').exists():
+		print("Features don't seem to be extracted or cannot be found. Run extract.py once again, maybe?")
+		return
+
 	device = 'cuda:0' if mag.device == 'cuda' else mag.device
 
 	print('Loading SpaCy into memory with', vocab_size, 'words.')
