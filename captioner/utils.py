@@ -4,6 +4,17 @@ from contextlib import contextmanager
 from collections import namedtuple
 from itertools import chain
 
+def _get_data_paths():
+	from pathlib import Path
+
+	DIR_DATA = Path('~/.data/COCO').expanduser()
+	DIR_CHECKPOINTS = Path(__file__).resolve().parents[1] / 'checkpoints'
+
+	for directory in [DIR_DATA, DIR_CHECKPOINTS]: directory.mkdir(exist_ok=True, parents=True)
+	return DIR_DATA, DIR_CHECKPOINTS
+
+DIR_DATA, DIR_CHECKPOINTS = _get_data_paths()
+
 class BeamSearch:
 	Branch = namedtuple('Branch', ['content', 'score', 'context'])
 
@@ -146,3 +157,10 @@ def get_tqdm():
 		return getattr(tqdm, 'tqdm_notebook')
 	except:
 		return getattr(tqdm, 'tqdm')
+
+def get_optimizer(optimizer):
+	from torch import optim
+	from functools import partial
+
+	_optim_dict = {'adam': partial(optim.Adam, amsgrad=True)}
+	return _optim_dict[optimizer]

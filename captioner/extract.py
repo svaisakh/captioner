@@ -48,8 +48,7 @@ def __main(architecture, image_shape, extractor_batch_size, num_workers):
 
 	from pathlib import Path
 	from captioner.data import get_extract_dataloaders
-
-	DIR_DATA = Path('~/.data/COCO').expanduser()
+	from captioner.utils import DIR_DATA
 
 	dataloader = get_extract_dataloaders(DIR_DATA, image_shape, extractor_batch_size, num_workers)
 	extractor = Extractor(architecture)

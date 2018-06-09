@@ -47,8 +47,7 @@ def download_and_extract(url, path, extract_path=None, extras=None):
 	if extras is not None: extras()
 
 def __main():
-	DIR_DATA = Path('~/.data/COCO').expanduser()
-	DIR_DATA.mkdir(exist_ok=True, parents=True)
+	from captioner.utils import DIR_DATA
 
 	for mode, name in (('val', 'Validation'), ('train', 'Training')):
 		print(f'Downloading {name} set...')

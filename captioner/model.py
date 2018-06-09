@@ -14,7 +14,7 @@ class Model(nn.Module):
 
         super().__init__()
         self.fc_feat = nn.Linear(feature_dim, hidden_size * num_layers)
-        rnn_module_dict = {'lstm': nn.LSTM, 'rnn': nn.RNN}
+        rnn_module_dict = {'LSTM': nn.LSTM, 'RNN': nn.RNN}
         self.rnn = rnn_module_dict[rnn_type](embedding_dim, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, vocab_size + 1)
 
