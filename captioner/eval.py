@@ -22,6 +22,10 @@ def pretty_print(captions):
 
 
 def __main(beam_size, probabilistic, image_shape, hidden_size, num_layers, rnn_type, vocab_size, architecture):
+	from captioner.nlp import get_nlp
+	from captioner.extract import Extractor
+	from captioner.model import Model
+
 	device = 'cuda:0' if mag.device == 'cuda' else mag.device
 	nlp = get_nlp('en_core_web_lg', vocab_size, DIR_CHECKPOINTS / 'vocab')
 	embedding_dim = nlp.vocab.vectors.shape[1]
