@@ -1,6 +1,12 @@
 import magnet as mag
 
 def Extractor(architecture):
+	"""
+	The pretrained extractor CNN which is used to obtain the features of an image prior to sending it to the generative RNN.
+
+	:param architecture: The ResNet Architecture to use for extraction. Currently supports 'resnet18', 'resnet34', 'resnet50', 'resnet101' and 'resnet152'
+	:return: The CNN extractor.
+	"""
 	import torchvision.models
 
 	architecture = getattr(torchvision.models, architecture)

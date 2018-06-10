@@ -10,6 +10,27 @@ from captioner.nlp import idx_word
 
 class Model(nn.Module):
     def __init__(self, feature_dim, embedding_dim, hidden_size, num_layers, rnn_type, vocab_size):
+        """
+        The generative RNN model which produces the captions.
+
+        The image features are passed through a Linear layer, reshaped and fed to the RNN as it's initial hidden state.
+
+        The RNN's hidden states for each timestep are passed through another Linear layer to get the scores for each
+        word for each timestep.
+
+        While sampling, teacher forcing is disabled and the RNN proceeds in a step-by-step fashion.
+        The previous output is obtained by beam search on the scores, and used as current input.
+
+        Overall, beam search returns the most likely captions.
+
+        :param feature_dim: The dimensionality of the CNN features.
+        :param embedding_dim: The dimensionality of the word embeddings.
+        :param hidden_size: The hidden size for each layer of the RNN.
+        :param num_layers: Number of layers in the RNN.
+        :param rnn_type: The type of RNN to use.
+                        Options: ['LSTM', 'RNN']
+        :param vocab_size: The vocabulary size used.
+        """
         from captioner.utils import BeamSearch
 
         super().__init__()
@@ -23,6 +44,19 @@ class Model(nn.Module):
         self.to(mag.device)
 
     def forward(self, features, cap=None, nlp=None, beam_size=3, max_len=20, probabilistic=False):
+        """
+        Returns the scores/captions of image features.
+
+        :param features: The CNN extracted image features.
+        :param cap: The caption string. Cannot be left out during training, since we're teacher forcing.
+                    During evaluation, if left out, uses beam search to generate captions.
+        :param nlp: spaCy model used for tokenization and vectorization.
+        :param beam_size: Captions are sampled using beam search with this size.
+        :param max_len: The maximum allowed length upto which captions are generated. It's then pruned upto the first sentence.
+        :param probabilistic: If True, the beam search retains nodes at each iteration according to their probabilities.
+        :return: If training, returns the scores for each word at each timestep.
+                If evaluating, returns a likely caption.
+        """
         if cap is None:
             if self.training: raise ValueError('Provide caption while training')
             return self._generate(features, nlp, beam_size, max_len, probabilistic)

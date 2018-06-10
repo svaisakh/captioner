@@ -19,9 +19,29 @@ class BeamSearch:
 	Branch = namedtuple('Branch', ['content', 'score', 'context'])
 
 	def __init__(self, build=None):
+		"""
+		A Beam Searcher instance.
+
+		:param build: A function, f(content, context) which takes in a content and context object and
+					returns a (contents, scores, context) tuple.
+					The definition of what these are is upto the function.
+
+					Content represents the things in a particular node.
+					Context represents the features of a branch of nodes.
+					A score is the log probability of a particular node.
+		"""
 		self.build = build
 
 	def __call__(self, beam_size, context, max_len, probabilistic=0):
+		"""
+		Perform beam search.
+
+		:param beam_size: The size of the beam used.
+		:param context: The initial context.
+		:param max_len: Search will be terminated when branches reach this length.
+		:param probabilistic: If True, retains nodes at each iteration according to their probabilities.
+		:return: A list of branches found. Each branch has a content and score (relative probability).
+		"""
 		return self._search(beam_size, context, max_len, probabilistic)
 
 	def _search(self, beam_size, context, max_len, probabilistic):
@@ -66,6 +86,14 @@ def _sort_list(x, key, probabilistic):
 	return [x[i] for i in ids]
 
 def launch(fn, defaults=None, default_module=None):
+	"""
+	Launches a function as the main entry point to a command line program.
+
+	:param fn: The function to launch.
+	:param defaults: A dictionary of default arguments to the function.
+	:param default_module: A module with default arguments with the same name.
+						Any options to click should be given in a dictionary called click_options in this module.
+	"""
 	import click
 
 	from inspect import signature
@@ -91,6 +119,11 @@ def launch(fn, defaults=None, default_module=None):
 	return fn()
 
 def show_coco(img, captions):
+	"""
+	Show the coco images with the captions as title.
+	:param img: Images to show.
+	:param captions: Corresponding captions
+	"""
 	import matplotlib.pyplot as plt
 
 	from numpy.random import randint
@@ -109,12 +142,23 @@ def show_coco(img, captions):
 	for i, c in zip(img, captions): show_image(i, c)
 
 def loopy(gen):
+	"""
+	Returns an iterator with infinite length.
+	Does not raise the StopException.
+
+	:param gen: The generator object to loop.
+	:return: An infinite iterator.
+	"""
 	while True:
 		for x in iter(gen): yield x
 
 def working_directory(path):
-	"""path can also be a function in case of decorator"""
+	"""
+	A context manager cum decorator which changes the working directory to the specified path.
+	If used as a decorator with no arguments, the first path in the arguments of the inner function is used.
 
+	:param path: The path to change to/the function to decorate
+	"""
 	from inspect import isfunction
 	if not isfunction(path):
 		return _working_directory_context_manager(path)
@@ -150,15 +194,23 @@ def _working_directory_context_manager(path):
 	os.chdir(path_cwd) # Change back to working directory
 
 def get_tqdm():
+	"""
+	:return: Returns a flexible tqdm object according to the environment of execution.
+	"""
 	import tqdm
 
 	try:
-		get_ipython
+		get_ipython()
 		return getattr(tqdm, 'tqdm_notebook')
 	except:
 		return getattr(tqdm, 'tqdm')
 
 def get_optimizer(optimizer):
+	"""
+	Returns an optimizer according to the passed string.
+	:param optimizer: The string representation of the optimizer. eg. 'adam' for Adam etc.
+	:return: The proper nn.optim optimizer.
+	"""
 	from torch import optim
 	from functools import partial
 

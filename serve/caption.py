@@ -28,6 +28,11 @@ def _prepare():
 
 nlp, extractor, model = _prepare()
 
-def get_captions(filename):
-	image = Image.open(filename)
-	return caption(model, extractor, nlp, image, beam_size, probabilistic, image_shape)
+def get_captions(path):
+	"""
+	Gets a list of (caption, probability) tuples applied on an image at the specified path.
+	:param path: Path to the image.
+	:return: List of (caption, probability) tuples.
+	"""
+	image = Image.open(path)
+	return caption(image, model, extractor, nlp, beam_size, probabilistic, image_shape)

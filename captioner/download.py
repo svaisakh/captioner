@@ -5,9 +5,20 @@ image_url = lambda mode: f'http://images.cocodataset.org/zips/{mode}2017.zip'
 annotations_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 
 def download_images(mode, path):
-	download_and_extract(image_url(mode), path, extract_path=mode)
+	"""
+	Downloads the images from the COCO website and extracts them.
+
+	:param mode: 'train' or 'val' according to whether you want to download the training or validation set respectively.
+	:param path: Path in which to download the images.
+	"""
+	_download_and_extract(image_url(mode), path, extract_path=mode)
 
 def download_captions(path):
+	"""
+	Downloads the captions from the COCO website.
+
+	:param path: Path in which to download the captions. This needs to be the root path to the 'train' and 'val' directories.
+	"""
 	if Path(path / 'train/captions.json').exists():
 		print('Captions already downloaded.')
 		return # Why bother. Job already done
@@ -19,10 +30,10 @@ def download_captions(path):
 			os.rename(f'annotations/captions_{mode}2017.json', f'{mode}/captions.json')
 		shutil.rmtree('annotations')
 
-	download_and_extract(annotations_url, path, extras=extras)
+	_download_and_extract(annotations_url, path, extras=extras)
 
 @working_directory
-def download_and_extract(url, path, extract_path=None, extras=None):
+def _download_and_extract(url, path, extract_path=None, extras=None):
 	import wget, os
 
 	from zipfile import ZipFile
