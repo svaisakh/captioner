@@ -39,11 +39,11 @@ def pretty_print(captions):
 	print('\n'.join(f'{c} ({p:.2f})' for c, p in captions))
 
 
-
-def __main(beam_size, probabilistic, image_shape, hidden_size, num_layers, rnn_type, vocab_size, architecture):
+def __main(image, beam_size, probabilistic, image_shape, hidden_size, num_layers, rnn_type, vocab_size, architecture):
 	from captioner.nlp import get_nlp
 	from captioner.extract import Extractor
 	from captioner.model import Model
+	from captioner.utils import DIR_CHECKPOINTS
 
 	device = 'cuda:0' if mag.device == 'cuda' else mag.device
 	nlp = get_nlp('en_core_web_lg', vocab_size, DIR_CHECKPOINTS / 'vocab')
@@ -57,10 +57,13 @@ def __main(beam_size, probabilistic, image_shape, hidden_size, num_layers, rnn_t
 	model.load_state_dict(torch.load(DIR_CHECKPOINTS / 'model.pt', map_location=device))
 
 	print('\nCaption:\n')
-	pretty_print(caption(img, model, extractor, nlp, beam_size, probabilistic, image_shape))
+	pretty_print(caption(image, model, extractor, nlp, beam_size, probabilistic, image_shape))
 
 if __name__ == '__main__':
+	import click
+
 	from captioner import hparams
 	from captioner.utils import launch
 
+	__main = click.argument('image')(__main)
 	launch(__main, default_module=hparams)
