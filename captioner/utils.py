@@ -70,7 +70,8 @@ class BeamSearch:
 	def _merge(self, b1, b2):
 		return self.Branch(b1.content + b2.content, b1.score + b2.score, b2.context)
 
-	def _prune_branches(self, branches, beam_size, probabilistic):
+	@staticmethod
+	def _prune_branches(branches, beam_size, probabilistic):
 		branches = _sort_list(branches, key=lambda branch: np.exp(branch.score), probabilistic=probabilistic)
 		return branches[:beam_size]
 
