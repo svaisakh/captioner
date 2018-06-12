@@ -1,6 +1,7 @@
-# 			Show and Tell
-
-# 	A Neural Image Caption Generator
+# 			Show and Tell: A Neural Image Caption Generator
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/svaisakh/captioner/blob/master/LICENSE)
+ 
+ [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 
 an implementation inspired by the [paper](https://arxiv.org/abs/1411.4555) by [Oriol Vinyals](https://ai.google/research/people/OriolVinyals), [Alexander Toshev](https://www.linkedin.com/in/alexander-toshev-9270726), [Samy Bengio](https://ai.google/research/people/bengio) and [Dumitru Erhan](http://www.dumitru.ca/).
 
@@ -56,3 +57,5 @@ There are three ways you might want to use this project.
 1. **Learn**: To follow along with the Jupyter Notebooks, go to the [notebooks](notebooks/) folder.
 2. **Apply**: To execute on the command line, go to the [captioner](captioner/) folder.
 3. **Serve**: To serve the model as a flask microservice, go to the [server](serve/) folder.
+
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
