@@ -2,7 +2,7 @@ import torch
 
 from numpy import stack
 
-def get_nlp(model, vocab_size, save_path=None):
+def get_nlp(model, vocab_size, save_path=None, prune_batch_size=8):
 	"""
 	This method loads the model and then [_prunes_](https://spacy.io/api/vocab#prune_vectors) it to the vocab_size.
 	It retains the most frequent tokens and maps out of vocabulary words at runtime to synonyms.
@@ -23,17 +23,17 @@ def get_nlp(model, vocab_size, save_path=None):
 
 	nlp = spacy.load(model)
 	nlp.pipeline = []
-	_set_vocab_size(nlp, vocab_size, save_path)
+	_set_vocab_size(nlp, vocab_size, prune_batch_size, save_path)
 	return nlp
 
-def _set_vocab_size(nlp, vocab_size, save_path=None):
+def _set_vocab_size(nlp, vocab_size, prune_batch_size, save_path=None):
 	if save_path is not None and save_path.exists():
 		nlp.vocab.from_disk(save_path)
 		new_vocab_size = nlp.vocab.vectors.shape[0]
-		if new_vocab_size != vocab_size: _prune_vocab(nlp, save_path)
-	else: _prune_vocab(nlp, save_path)
+		if new_vocab_size != vocab_size: _prune_vocab(nlp, vocab_size, prune_batch_size, save_path)
+	else: _prune_vocab(nlp, vocab_size, prune_batch_size, save_path)
 
-def _prune_vocab(nlp, save_path=None):
+def _prune_vocab(nlp, vocab_size, prune_batch_size, save_path=None):
 	nlp.vocab.prune_vectors(vocab_size, prune_batch_size)
 	if save_path is not None: nlp.vocab.to_disk(save_path)
 
