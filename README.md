@@ -1,7 +1,7 @@
 # 			Show and Tell: A Neural Image Caption Generator
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/svaisakh/captioner/blob/master/LICENSE)
+[![See Demo](https://img.shields.io/badge/See-Demo-brightgreen.svg?style=for-the-badge)](https://8i7gm9hsh8.execute-api.us-east-2.amazonaws.com/production)[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/svaisakh/captioner/blob/master/LICENSE)
 
- [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
+![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg) ![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)
 
 an implementation inspired by the [paper](https://arxiv.org/abs/1411.4555) by [Oriol Vinyals](https://ai.google/research/people/OriolVinyals), [Alexander Toshev](https://www.linkedin.com/in/alexander-toshev-9270726), [Samy Bengio](https://ai.google/research/people/bengio) and [Dumitru Erhan](http://www.dumitru.ca/).
 
@@ -68,4 +68,4 @@ The hyperparameters are the defaults in the repo.
 
 Place it in the [checkpoints](checkpoints/) directory and you're good to go.
 
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
