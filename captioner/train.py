@@ -34,10 +34,12 @@ def optimize(model, optimizer, history, dataloader, nlp, save_path, epochs=1, it
 	mean = lambda x: sum(x) / len(x)
 
 	model.train()
-	if iterations > 0: iterations = int(epochs * len(dataloader['train']))
+	if iterations < 0: iterations = int(epochs * len(dataloader['train']))
 	prog_bar = tqdm(range(iterations))
 	gen = {mode: loopy(dataloader[mode]) for mode in ('train', 'val')}
 	running_history = {'loss': []}
+
+	device = 'cuda:0' if mag.device == 'cuda' else mag.device
 
 	for batch in prog_bar:
 		feature, caption = next(gen['train'])

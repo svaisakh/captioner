@@ -27,13 +27,13 @@ We approach the problem in two stages:
 
    
 
-2.  ### Language:
+2. ### Language:
 
-   A pre-trained word embedding is used to process and tokenize the captions.
+      A pre-trained word embedding is used to process and tokenize the captions.
 
-   In our case, we use the ['en_core_web_lg'](https://spacy.io/models/en#en_core_web_lg) model from spaCy.
+      In our case, we use the ['en_core_web_lg'](https://spacy.io/models/en#en_core_web_lg) model from spaCy.
 
-   This is then teacher-forced to an RNN which predicts the next word.
+      This is then teacher-forced to an RNN which predicts the next word.
 
 ### Combining the two
 
@@ -58,7 +58,17 @@ There are three ways you might want to use this project.
 2. **Apply**: To execute on the command line, go to the [captioner](captioner/) folder.
 3. **Serve**: To serve the model as a flask microservice, go to the [server](serve/) folder.
 
+## Prerequisites
 
+1. Follow the general steps in [this](https://github.com/svaisakh/using-lessons) tutorial to set up the environment and the startup file.
+
+   **Make sure you have MagNet installed.**
+
+2. Install [pycocotools](https://github.com/cocodataset/cocoapi) in the conda environment by running 
+
+   `pip install "git+https://github.com/philferriere/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI" `
+
+3. Install the ['en_core_web_lg'](https://spacy.io/models/en#en_core_web_lg) model from spaCy by running `python -m spacy download en_core_web_lg `
 
 ## Pre-trained Model
 

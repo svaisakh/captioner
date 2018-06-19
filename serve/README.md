@@ -1,11 +1,3 @@
-## Prerequisites
-
-Follow the general steps in [this](https://github.com/svaisakh/using-lessons) tutorial to set up the environment and the startup file.
-
-**Make sure you have MagNet installed.**
-
-
-
 ## Getting the server up and running
 
 1. Activate the Conda environment by running `source activate captioner`.

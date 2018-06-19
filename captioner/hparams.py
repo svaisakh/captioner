@@ -19,7 +19,7 @@ hidden_size = 512
 num_layers = 1
 
 # Training
-epochs = 1.0
+epochs = 10.0
 iterations = -1
 shuffle = True
 optimizer = 'adam'

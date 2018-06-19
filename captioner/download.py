@@ -11,7 +11,13 @@ def download_images(mode, path):
 	:param mode: 'train' or 'val' according to whether you want to download the training or validation set respectively.
 	:param path: Path in which to download the images.
 	"""
-	_download_and_extract(image_url(mode), path, extract_path=mode)
+	try:
+		next((path / mode).glob('*.jpg'))
+		print('Already downloaded.')
+		return # Why bother. Job already done
+	except: pass
+
+	_download_and_extract(image_url(mode), path, lambda: os.rename(f'{mode}2017', f'{mode}'))
 
 def download_captions(path):
 	"""
@@ -19,8 +25,8 @@ def download_captions(path):
 
 	:param path: Path in which to download the captions. This needs to be the root path to the 'train' and 'val' directories.
 	"""
-	if Path(path / 'train/captions.json').exists():
-		print('Captions already downloaded.')
+	if (path / 'train' / 'captions.json').exists():
+		print('Already downloaded.')
 		return # Why bother. Job already done
 
 	def extras():
@@ -30,20 +36,15 @@ def download_captions(path):
 			os.rename(f'annotations/captions_{mode}2017.json', f'{mode}/captions.json')
 		shutil.rmtree('annotations')
 
-	_download_and_extract(annotations_url, path, extras=extras)
+	_download_and_extract(annotations_url, path, extras)
 
 @working_directory
-def _download_and_extract(url, path, extract_path=None, extras=None):
+def _download_and_extract(url, path, extras=None):
 	import wget, os
 
 	from zipfile import ZipFile
 
-	url = Path(url)
-	filename = url.name
-
-	if extract_path is not None and Path(extract_path).exists():
-		print('Already downloaded.')
-		return # Why bother. Job already done
+	filename = Path(url).name
 
 	# Download if not yet done
 	if not Path(filename).exists():
@@ -51,7 +52,7 @@ def _download_and_extract(url, path, extract_path=None, extras=None):
 		wget.download(url)
 
 	print('Extracting...')
-	ZipFile(filename).extractall(extract_path) # Extract
+	ZipFile(filename).extractall() # Extract
 
 	os.remove(filename) # Remove the zip file since it's no longer needed
 
@@ -61,13 +62,13 @@ def __main():
 	from captioner.utils import DIR_DATA
 
 	for mode, name in (('val', 'Validation'), ('train', 'Training')):
-		print(f'Downloading {name} set...')
+		print(f'\n{name} set:')
 		download_images(mode, DIR_DATA)
 
-	print('Downloading captions...')
+	print('\nCaptions:')
 	download_captions(DIR_DATA)
 
-	print('Done')
+	print('\nDone')
 
 if __name__ == '__main__':
 	from utils import launch

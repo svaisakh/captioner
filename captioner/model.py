@@ -105,7 +105,7 @@ class Model(nn.Module):
         return content, scores, context
 
     def _get_initial_hidden(self, features):
-        h0 = F.relu(self.fc_feat(features)).view(1, self.rnn.num_layers, -1).transpose(0, 1).contiguous()
+        h0 = F.relu(self.fc_feat(features)).view(1, -1, self.rnn.hidden_size).transpose(0, 1).contiguous()
         if isinstance(self.rnn, nn.LSTM): h0 = (h0, torch.zeros_like(h0))
 
         return h0

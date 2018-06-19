@@ -1,11 +1,3 @@
-## Prerequisites
-
-Follow the general steps in [this](https://github.com/svaisakh/using-lessons) tutorial to set up the environment and the startup file.
-
-**Make sure you have MagNet installed.**
-
-
-
 ## For Training
 
 1. Download and extract the COCO dataset and captions using the [Download](Download.ipynb) notebook.
